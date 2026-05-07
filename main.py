@@ -3,6 +3,7 @@ import re
 import time
 import sqlite3
 import requests
+import unicodedata
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
@@ -37,9 +38,10 @@ CHAT_ID = os.getenv("CHAT_ID_GRUPO")
 
 GAPS_ELIMINATORIOS = [
     "inglês avançado", "inglês fluente", "presencial", "php", "python",
-    "node.js", "node", "react native", "kmp", "sqs", "rabbitmq", "product manager",
+    "node.js", "node", "sqs", "rabbitmq", "product manager",
     "product owner", "vue.js", "vue js", "salesforce", "sales force", "react", "apex", 
-    "kubernetes", "kafka", "dot net", ".net", "ruby", "go", "ruby on rails", "java", "angular", "typescript",
+    "kubernetes", "kafka", "dot net", ".net", "ruby", "go", "ruby on rails", "angular", "product designer", 
+    "tester", "quality assurance", "analista de testes", "qa"
 ]
 
 STACK_AVANCADO = [
@@ -50,7 +52,7 @@ STACK_AVANCADO = [
     "cross-platform", "cross platform", "android", "ios", "kotlin", "swift",
     "codemagic", "github actions", "bitrise", "fastlane", "gitflow",
     "sqlite", "isar", "hive", "sharedpreferences", "fluttersecurestorage",
-    "tech lead", "agile", "scrum", "kanban", "mentoria", "code review"
+    "tech lead", "agile", "scrum", "kanban", "mentoria", "code review", "sênior", "pleno", "SN", "PL"
 ]
 
 STACK_INTERMEDIARIO = [
@@ -443,6 +445,102 @@ def buscar_vagas_linkedin(conn, cursor):
         except Exception as e:
             print(f"   ⚠️  Erro: {e}")
 
+# --- 7. INHIRE ---
+
+EMPRESAS_INHIRE = [
+    "reclameaqui",
+    "mottu",
+    "solutis",
+    "avenue",
+    "dtidigital",
+    "frameworkdigital",
+    "deal",
+    # Adicione outras empresas da inhire aqui (apenas o subdomínio, ex: empresa.inhire.app -> "empresa")
+]
+
+def buscar_vagas_inhire(conn, cursor):
+    print("\n🟣 INHIRE — iniciando varredura...")
+
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    }
+    url_base = "https://api.inhire.app/job-posts/public/pages"
+
+    filtros = [
+        {"nome": "FLUTTER · REMOTO", "termo": "flutter", "local_filtro": "remoto"},
+        {"nome": "MOBILE · REMOTO",  "termo": "mobile",  "local_filtro": "remoto"},
+    ]
+
+    for empresa_slug in EMPRESAS_INHIRE:
+        print(f"\n   🏢 {empresa_slug.upper()}...")
+        headers['X-Tenant'] = empresa_slug
+        
+        try:
+            resp = requests.get(url_base, headers=headers, timeout=15)
+            if resp.status_code != 200:
+                print(f"   🛑 HTTP {resp.status_code}")
+                continue
+                
+            dados = resp.json()
+            jobs = dados.get('jobsPage', [])
+            nome_empresa = dados.get('tenantName', empresa_slug.capitalize())
+            
+            if not jobs:
+                print("   🔚 Nenhuma vaga encontrada.")
+                continue
+
+            for filtro in filtros:
+                # Vamos buscar vagas para cada filtro
+                for job in jobs:
+                    if job.get('status') != 'published':
+                        continue
+                        
+                    titulo = job.get('displayName', 'Título Indisponível')
+                    titulo_lower = titulo.lower()
+                    
+                    if filtro['termo'] not in titulo_lower:
+                        continue
+                        
+                    modelo_api = job.get('workplaceType', '').lower()
+                    modelo = TRADUCAO_MODELO.get(modelo_api, "Não informado")
+                    
+                    if filtro['local_filtro'] == 'remoto' and modelo_api != 'remote':
+                        continue
+                        
+                    job_id = job.get('jobId')
+                    titulo_slug = unicodedata.normalize('NFKD', titulo).encode('ascii', 'ignore').decode('utf-8')
+                    titulo_slug = re.sub(r'[^\w\s-]', '', titulo_slug).strip().lower()
+                    titulo_slug = re.sub(r'[-\s]+', '-', titulo_slug)
+                    link = f"https://{empresa_slug}.inhire.app/vagas/{job_id}/{titulo_slug}"
+                    
+                    bloqueada, motivo = filtros_basicos(titulo)
+                    if bloqueada:
+                        print(f"   {motivo}")
+                        continue
+                        
+                    if ja_enviada(cursor, link):
+                        continue
+                        
+                    local = job.get('location', 'Não informado')
+                    nivel_match, techs = calcular_match(titulo)
+                    techs_str = " · ".join(t.upper() for t in techs[:4]) if techs else "Verificar descrição"
+                    data_f = datetime.now().strftime("%d/%m/%Y")
+                    
+                    mensagem = (
+                        f"🟣 <b>INHIRE — {filtro['nome']}</b>\n\n"
+                        f"💼 <b>Vaga:</b> {titulo}\n"
+                        f"🏢 <b>Empresa:</b> {nome_empresa}\n"
+                        f"📍 <b>Local:</b> {local}\n"
+                        f"💻 <b>Modelo:</b> {modelo}\n"
+                        f"📅 <b>Data (Descoberta):</b> {data_f}\n"
+                        f"📊 <b>Match:</b> {nivel_match} · <i>{techs_str}</i>\n\n"
+                        f"🔗 <a href='{link}'>Aplicar na Inhire</a>"
+                    )
+                    registrar_e_enviar(conn, cursor, link, titulo, nome_empresa, data_f, mensagem, "INHIRE", nivel_match)
+                    
+        except Exception as e:
+            print(f"   ⚠️  Erro ao buscar {empresa_slug}: {e}")
+
 # --- MAIN ---
 
 def main():
@@ -455,6 +553,7 @@ def main():
     buscar_vagas_gupy(conn, cursor)
     buscar_vagas_programathor(conn, cursor)
     buscar_vagas_linkedin(conn, cursor)
+    buscar_vagas_inhire(conn, cursor)
 
     conn.close()
     print("\n✅ Varredura completa de todas as fontes!")

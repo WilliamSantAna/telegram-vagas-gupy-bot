@@ -44,6 +44,12 @@ GAPS_ELIMINATORIOS = [
     "tester", "quality assurance", "analista de testes", "qa", "fullstack", "swift", "kotlin",  "maker",  "CRO", "ux designer"
 ]
 
+EMPRESAS_IGNORADAS = [
+    "hired",
+    "Jobgether"
+    # Adicione outras empresas que deseja ignorar aqui
+]
+
 STACK_AVANCADO = [
     "flutter", "dart", "clean architecture", "bloc", "cubit", "provider", "riverpod", "getx", "mobx",
     "firebase", "crashlytics", "remote config", "firebase performance", "firebase authentication",
@@ -144,10 +150,15 @@ def registrar_e_enviar(conn, cursor, link, titulo, empresa, data_f, mensagem, fo
     print(f"   ✅ [{nivel_match}] {titulo[:50]}...")
     time.sleep(2)
 
-def filtros_basicos(titulo):
+def filtros_basicos(titulo, empresa=None):
     """Retorna (bloqueada, motivo) com os filtros de perfil."""
     if tem_gap_eliminatorio(titulo):
         return True, f"🚫 Gap: {titulo[:55]}"
+    if empresa:
+        emp = empresa.lower()
+        for emp_ignorada in EMPRESAS_IGNORADAS:
+            if emp_ignorada.lower() in emp:
+                return True, f"🚫 Empresa ignorada: {empresa[:50]}"
     return False, ""
 
 # --- 4. GUPY ---
@@ -216,7 +227,7 @@ def buscar_vagas_gupy(conn, cursor):
                     except Exception:
                         data_f, hora_f = "Sem data", "--:--"
 
-                    bloqueada, motivo = filtros_basicos(titulo)
+                    bloqueada, motivo = filtros_basicos(titulo, empresa)
                     if bloqueada:
                         print(f"   {motivo}")
                         continue
@@ -326,9 +337,15 @@ def buscar_vagas_programathor(conn, cursor):
 
                     # (Removido filtro de Sênior)
 
+                    # Filtros básicos (gap no título ou empresa ignorada)
+                    bloqueada, motivo = filtros_basicos(titulo, empresa)
+                    if bloqueada:
+                        print(f"   {motivo}")
+                        continue
+
                     # Gaps nos tags de tecnologia
-                    if tem_gap_eliminatorio(titulo) or any(tem_gap_eliminatorio(t) for t in tags):
-                        print(f"   🚫 Gap: {titulo[:55]}")
+                    if any(tem_gap_eliminatorio(t) for t in tags):
+                        print(f"   🚫 Gap na tag: {titulo[:55]}")
                         continue
 
                     if ja_enviada(cursor, link):
@@ -421,7 +438,7 @@ def buscar_vagas_linkedin(conn, cursor):
                 except Exception:
                     data_f, hora_f = "Sem data", "--:--"
 
-                bloqueada, motivo = filtros_basicos(titulo)
+                bloqueada, motivo = filtros_basicos(titulo, empresa)
                 if bloqueada:
                     print(f"   {motivo}")
                     continue
@@ -455,6 +472,14 @@ EMPRESAS_INHIRE = [
     "dtidigital",
     "frameworkdigital",
     "deal",
+    "aarin",
+    'kobe',
+    'peers',
+    'cubos',
+    'iconit',
+    'exa',
+    'programmers',
+    'growdev'
     # Adicione outras empresas da inhire aqui (apenas o subdomínio, ex: empresa.inhire.app -> "empresa")
 ]
 
@@ -513,7 +538,7 @@ def buscar_vagas_inhire(conn, cursor):
                     titulo_slug = re.sub(r'[-\s]+', '-', titulo_slug)
                     link = f"https://{empresa_slug}.inhire.app/vagas/{job_id}/{titulo_slug}"
                     
-                    bloqueada, motivo = filtros_basicos(titulo)
+                    bloqueada, motivo = filtros_basicos(titulo, nome_empresa)
                     if bloqueada:
                         print(f"   {motivo}")
                         continue
@@ -593,16 +618,15 @@ def buscar_vagas_solides(conn, cursor):
                     link = vaga.get('redirectLink', '')
                     if not link:
                         continue
-                        
-                    bloqueada, motivo = filtros_basicos(titulo)
+
+                    empresa = vaga.get('companyName', 'Empresa não informada')
+                    bloqueada, motivo = filtros_basicos(titulo, empresa)
                     if bloqueada:
                         print(f"   {motivo}")
                         continue
                         
                     if ja_enviada(cursor, link):
                         continue
-                        
-                    empresa = vaga.get('companyName', 'Empresa não informada')
                     
                     data_iso = vaga.get('createdAt', '')
                     if data_iso:

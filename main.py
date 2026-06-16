@@ -47,31 +47,27 @@ CHAT_ID = os.getenv("CHAT_ID_GRUPO")
 # Gupy: busca por cargo (jobName) e modalidade (workplaceTypes).
 # workplaceTypes válidos: 'remote' | 'hybrid' | 'on-site'
 FILTROS_GUPY = [
-    {"nome": "FLUTTER · REMOTO", "params": {'workplaceTypes': 'remote', 'jobName': 'flutter', 'limit': 10}},
-    {"nome": "MOBILE · REMOTO",  "params": {'workplaceTypes': 'remote', 'jobName': 'mobile',  'limit': 10}},
+    {"nome": "PHP · REMOTO", "params": {'workplaceTypes': 'remote', 'jobName': 'php', 'limit': 10}},
 ]
 
 # ProgramaThor: busca por termo de texto + filtro de localização.
 # local_filtro válidos: 'remoto' | 'sp'
 FILTROS_PROGRAMATHOR = [
-    {"nome": "FLUTTER · REMOTO", "termo": "flutter", "local_filtro": "remoto"},
-    {"nome": "MOBILE · REMOTO",  "termo": "mobile",  "local_filtro": "remoto"},
+    {"nome": "PHP · REMOTO", "termo": "php", "local_filtro": "remoto"},
 ]
 
 # LinkedIn (API guest): keywords + localização + filtros de data e modalidade.
 # f_WT=2 → remoto | f_TPR=r259200 → últimos 3 dias
 # Para outros países, altere o campo "location".
 FILTROS_LINKEDIN = [
-    {"nome": "FLUTTER · REMOTO", "params": {"keywords": "flutter", "location": "Brazil", "f_WT": "2", "f_TPR": "r259200", "start": 0}},
-    {"nome": "MOBILE · REMOTO",  "params": {"keywords": "mobile",  "location": "Brazil", "f_WT": "2", "f_TPR": "r259200", "start": 0}},
+    {"nome": "PHP · REMOTO", "params": {"keywords": "php", "location": "Brazil", "f_WT": "2", "f_TPR": "r259200", "start": 0}},
 ]
 
 # Inhire: busca por termo no título + filtro de localização.
 # local_filtro válidos: 'remoto' | 'presencial'
 # Requer também EMPRESAS_INHIRE abaixo (lista de subdomínios monitorados).
 FILTROS_INHIRE = [
-    {"nome": "FLUTTER · REMOTO", "termo": "flutter", "local_filtro": "remoto"},
-    {"nome": "MOBILE · REMOTO",  "termo": "mobile",  "local_filtro": "remoto"},
+    {"nome": "PHP · REMOTO", "termo": "php", "local_filtro": "remoto"},
 ]
 
 # Inhire — empresas monitoradas.
@@ -99,8 +95,7 @@ EMPRESAS_INHIRE = [
 # Solides: busca por título.
 # 'take' define quantas vagas por página (máx. recomendado: 14).
 FILTROS_SOLIDES = [
-    {"nome": "FLUTTER · REMOTO", "params": {'title': 'flutter', 'take': 14}},
-    {"nome": "MOBILE · REMOTO",  "params": {'title': 'mobile',  'take': 14}},
+    {"nome": "PHP · REMOTO", "params": {'title': 'php', 'take': 14}},
 ]
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -116,11 +111,11 @@ DIAS_BUSCA_SOLIDES = 20  # Solides → padrão: 20 dias
 # Qualquer termo abaixo encontrado no título da vaga a elimina da lista.
 # Use letras minúsculas — a busca é case-insensitive.
 GAPS_ELIMINATORIOS = [
-    "inglês avançado", "inglês fluente", "presencial", "php", "python",
-    "node.js", "node", "sqs", "rabbitmq", "product manager",
-    "product owner", "vue.js", "java", "vue js", "salesforce", "sales force", "react", "apex",
-    "kubernetes", "kafka", "dot net", ".net", "ruby", "go", "ruby on rails", "angular", "product designer",
-    "tester", "quality assurance", "analista de testes", "qa", "fullstack", "maker", "CRO", "ux designer","typescript", "adsales", "marketing",
+    "inglês avançado", "inglês fluente", "presencial", "python",
+    "sqs", "rabbitmq", "product manager",
+    "product owner", "java", "react", "apex",
+    "ruby", "go", "ruby on rails", "product designer",
+    "tester", "quality assurance", "analista de testes", "qa", "maker", "CRO", "ux designer", "adsales", "marketing",
     "bi analyst", "offshore", "automation", "cobol", "mainframe", "head of sales", "ai developer", "editor de vídeo"
 ]
 
@@ -145,18 +140,97 @@ EMPRESAS_IGNORADAS = [
 # Atenção: Gupy, LinkedIn e Inhire analisam apenas o título da vaga.
 # ProgramaThor usa título + tags; Solides usa título + descrição completa.
 MINHA_STACK = [
-    "flutter", "dart", "clean architecture", "bloc", "cubit", "provider", "riverpod",  "mobx",
-    "firebase", "crashlytics", "remote config", "firebase performance", "firebase authentication",
-    "onesignal", "cloud messaging", "api rest", "apis rest", "rest apis", "restful",  "dio", 
-    "flutter_test", "mocktail", "mockito", "tdd", "code coverage", "solid", "design patterns", 
-    "cross-platform", "cross platform", "android", "ios",
-    "codemagic", "github actions",  "fastlane", "gitflow",
-    "sqlite", "isar", "hive", "sharedpreferences", "fluttersecurestorage",
-    "tech lead", "agile", "scrum", "kanban",  "code review", "sênior", "pleno", "SN", "PL",
-    "devsecops", "micro front end", "testes de widget", "widget tests", "integration tests",
-    "offline first", "finops", "ci/cd", "mysql", "banco de dados", "figma", "flutter sdk", "solid", 
-    "modularização", "modular", "bloc_test", "clarity", "app store", "play store", "publicação", "push notifications"
+    "php",
+    "laravel",
+    "symfony",
+    "angular",
+    "typescript",
+    "javascript",
+    "nodejs",
+    "node",
+
+    "full stack",
+    "fullstack",
+    "backend",
+    "frontend",
+    "web development",
+
+    "api rest",
+    "rest api",
+    "restful",
+    "integração de sistemas",
+    "integrações",
+    "webservices",
+    "json",
+    "xml",
+
+    "mysql",
+    "mariadb",
+    "postgresql",
+    "sql",
+    "database",
+    "banco de dados",
+    "query optimization",
+
+    "clean architecture",
+    "solid",
+    "design patterns",
+    "ddd",
+    "domain driven design",
+    "arquitetura de software",
+    "arquitetura de sistemas",
+    "refatoração",
+
+    "git",
+    "github",
+    "gitlab",
+    "bitbucket",
+    "gitflow",
+
+    "docker",
+    "linux",
+    "ubuntu",
+    "nginx",
+    "apache",
+
+    "ci/cd",
+    "github actions",
+    "devops",
+
+    "unit tests",
+    "testes unitários",
+    "phpunit",
+    "automated tests",
+    "quality assurance",
+
+    "microservices",
+    "mensageria",
+    "fila de processamento",
+    "cache",
+    "redis",
+
+    "sistemas legados",
+    "legacy systems",
+    "debugging",
+    "troubleshooting",
+    "performance optimization",
+
+    "scrum",
+    "kanban",
+    "agile",
+    "code review",
+
+    "tech lead",
+    "senior developer",
+    "desenvolvedor sênior",
+
+    "erp",
+    "sistemas corporativos",
+    "software empresarial",
+    "business rules",
+    "análise de requisitos"
 ]
+
 
 # Set em memória para evitar duplicatas na mesma execução (mesma vaga, fontes/buscas diferentes)
 _enviados_sessao: set = set()

@@ -105,15 +105,14 @@ FILTROS_SOLIDES = [
 # Período máximo de publicação aceito. Vagas mais antigas são ignoradas.
 # Dica: na primeira execução, aumente os valores para preencher o histórico
 # (ex: 30 dias), depois retorne ao padrão.
-DIAS_BUSCA_GUPY    = 3   # Gupy    → padrão: 3 dias
+DIAS_BUSCA_GUPY    = 5   # Gupy    → padrão: 3 dias
 DIAS_BUSCA_SOLIDES = 20  # Solides → padrão: 20 dias
 
 # Qualquer termo abaixo encontrado no título da vaga a elimina da lista.
 # Use letras minúsculas — a busca é case-insensitive.
 GAPS_ELIMINATORIOS = [
     "inglês avançado", "inglês fluente", "presencial", "python",
-    "sqs", "rabbitmq", "product manager",
-    "product owner", "java", "react", "apex",
+    "product manager", "product owner", "java", "apex",
     "ruby", "go", "ruby on rails", "product designer",
     "tester", "quality assurance", "analista de testes", "qa", "maker", "CRO", "ux designer", "adsales", "marketing",
     "bi analyst", "offshore", "automation", "cobol", "mainframe", "head of sales", "ai developer", "editor de vídeo"
@@ -167,6 +166,9 @@ MINHA_STACK = [
     "mysql",
     "mariadb",
     "postgresql",
+    "oracle",
+    "pl/sql",
+    "plsql",
     "sql",
     "database",
     "banco de dados",

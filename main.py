@@ -89,7 +89,17 @@ EMPRESAS_INHIRE = [
     'programmers',
     'growdev',
     'aarin',
-    'wtime'
+    'wtime',
+    'v4company',
+    'radix',
+    'ap-digital-services',
+    'qive',
+    'auvotecnologia',
+    'v360',
+    'jump',
+    'turbi',
+    'sharepeoplehub',
+    
 ]
 
 # Solides: busca por título.

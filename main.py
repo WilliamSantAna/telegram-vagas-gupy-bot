@@ -99,7 +99,17 @@ EMPRESAS_INHIRE = [
     'jump',
     'turbi',
     'sharepeoplehub',
-    
+    'kstack',
+    'premiersoft',
+    'pilar',
+    'ninecon',
+    'jump'
+    'via',
+    'contaazul',
+    'semantix',
+    'mazzatech',
+    'cappta',
+    'nstech'
 ]
 
 # Solides: busca por título.
